@@ -58,3 +58,20 @@ func (db *DB) loadDB() (DBStructure, error) {
 	return dbStructure, err
 }
 
+func (db *DB) CreateChirp(body string) (Chirp, error) {
+	db.mu.Lock()
+	defer db.mu.Unlock()
+
+	dbStructure, err := db.loadDB()
+	if err != nil {
+		return Chirp{}, err
+	}
+
+	newId := len(dbStructure.Chirps) + 1
+	newChirp := Chirp{ID: newId, Body: body}
+	dbStructure.Chirps[newId] = newChirp
+
+    err = db.writeDB(dbStructure)
+	return newChirp, err
+
+}
