@@ -85,9 +85,9 @@ func (db *DB) GetChirpy() ([]Chirp, error) {
 		return nil, err
 	}
 
-	var Chirps []Chirp
+	var chirps []Chirp
 	for _, chirpy := range dbStructure.Chirps {
-		Chirps = append(Chirps, chirpy)
+		chirps = append(chirps, chirpy)
 	}
-	return Chirps, nil
+	return chirps, nil
 }
