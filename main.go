@@ -108,8 +108,24 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, chirp)
 }
 
+func getChirpys(w http.ResponseWriter, r *http.Request) {
+    chirps, err := db.GetChirpy()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not retrieve chirps")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, chirps)
+}
+
 func main() {
 	apiCfg := apiConfig{}
+	var err error
+	db, err = database.NewDB("database.json")
+	if err != nil {
+		fmt.Println("Error initializing database:", db)
+	}
+	fmt.Println("Connected to database")
 
 	mux := http.NewServeMux()
 	server := &http.Server{
@@ -122,6 +138,7 @@ func main() {
 	mux.HandleFunc("GET /admin/metrics", apiCfg.metricsHandler)
 	mux.HandleFunc("/api/reset", apiCfg.resetHandler)
 	mux.HandleFunc("POST /api/chirps", validateChirp)
+	mux.HandleFunc("GET /api/chirps", getChirpys)
 
 	fmt.Println("Starting server on :8080")
 	if err := server.ListenAndServe(); err != nil {
