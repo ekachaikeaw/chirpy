@@ -45,6 +45,16 @@ func (db *DB) writeDB(dbStructure DBStructure) error {
 		return err
 	}
 	return os.WriteFile(db.path, data, 0644)
+}
 
+func (db *DB) loadDB() (DBStructure, error) {
+	file, err := os.ReadFile(db.path)
+	if err != nil {
+        return DBStructure{}, err
+	}
+
+	var dbStructure DBStructure 
+	err = json.Unmarshal(file, &dbStructure)
+	return dbStructure, err
 }
 
