@@ -105,7 +105,7 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	// Respond with cleaned body
-	respondWithJSON(w, http.StatusOK, chirp)
+	respondWithJSON(w, http.StatusCreated, chirp)
 }
 
 func getChirpys(w http.ResponseWriter, r *http.Request) {
