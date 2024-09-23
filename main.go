@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/ekachaikeaw/chirpy/database"
 )
+
+var db *database.DB
 
 type apiConfig struct {
 	fileserverHits int
@@ -74,12 +78,7 @@ func cleanProfanity(body string) string {
 
 func validateChirp(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		ID 		uint `json:"id"`
 		Body string `json:"body"`
-	}
-
-	type cleanedRes struct {
-		CleanedBody string `json:"cleaned_body"`
 	}
 
 	// Decode the request body
@@ -99,9 +98,14 @@ func validateChirp(w http.ResponseWriter, r *http.Request) {
 
 	// Clean the body from profane words
 	cleanedBody := cleanProfanity(params.Body)
-
+	chirp, err := db.CreateChirp(cleanedBody)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Could not create chirp")
+		return
+	}
+	
 	// Respond with cleaned body
-	respondWithJSON(w, http.StatusOK, cleanedRes{CleanedBody: cleanedBody})
+	respondWithJSON(w, http.StatusOK, chirp)
 }
 
 func main() {
