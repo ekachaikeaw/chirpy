@@ -20,13 +20,14 @@ type DB struct {
 	mu *sync.RWMutex
 }
 
-func NewDB(path string) *DB {
+func NewDB(path string) (*DB, error) {
 	db := &DB{
 		path: path,
 		mu: &sync.RWMutex{},
 	}
 
-	return db
+	err := db.ensureDB()
+	return db, err
 }
 
 func (db *DB) ensureDB() error {
@@ -45,5 +46,5 @@ func (db *DB) writeDB(dbStructure DBStructure) error {
 	}
 	return os.WriteFile(db.path, data, 0644)
 
-
 }
+
