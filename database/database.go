@@ -29,3 +29,21 @@ func NewDB(path string) *DB {
 	return db
 }
 
+func (db *DB) ensureDB() error {
+
+	_, err := os.Stat(db.path)
+	if os.IsNotExist(err) {
+	    return db.writeDB(DBStructure{Chirps: make(map[int]Chirp)}) 
+	}
+	return nil
+}
+
+func (db *DB) writeDB(dbStructure DBStructure) error {
+	data, err := json.MarshalIndent(dbStructure, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(db.path, data, 0644)
+
+
+}
